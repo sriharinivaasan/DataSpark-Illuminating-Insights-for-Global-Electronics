@@ -11,7 +11,6 @@ UPDATE salesdf SET OrderDate1 = STR_TO_DATE(OrderDate1, '%m/%d/%Y');
 ALTER TABLE salesdf ADD OrderYear1 INT;
 UPDATE salesdf SET OrderYear1 = LEFT(OrderDate1, 4);
 
-
 #salesandcustomers
 CREATE TABLE salesandcustomers AS SELECT c.CustomerKey1,c.Gender1,c.Name1,c.City1,c.State1,c.Country1,c.Continent1,c.Birthyear1,s.OrderDate1,s.OrderYear1,s.StoreKey1,s.ProductKey1,s.Quantity1,s.CurrencyCode1 FROM customersdf c JOIN salesdf s ON c.CustomerKey1 = s.CustomerKey1;
 ALTER TABLE salesandcustomers ADD ageyear1 INT;
@@ -33,7 +32,6 @@ UPDATE prdf
 SET UnitCostUSD1 = CAST(REPLACE(SUBSTRING(UnitCostUSD1, 2), ',', '') AS DECIMAL(10,2));
 UPDATE prdf
 SET UnitPriceUSD1 = CAST(REPLACE(SUBSTRING(UnitPriceUSD1, 2), ',', '') AS DECIMAL(10,2));
-
 select * from prdf;
 ALTER TABLE prdf ADD profit FLOAT;
 UPDATE prdf SET profit = UnitPriceUSD1-UnitCostUSD1 ;
@@ -44,3 +42,24 @@ select * from sales_products;
 CREATE TABLE category_state as 
 select sp.subcategory1,sc.state1 from sales_products sp join salesandcustomers sc on sp.ProductKey1 = sc.ProductKey1;
 select sp.brand1,sc.state1 from sales_products sp join salesandcustomers sc on sp.ProductKey1 = sc.ProductKey1;
+
+#10 SQL queries to extract key insights from the data
+SELECT * FROM salesandcustomers;
+SELECT * FROM prdf;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where sc.Gender1 = 'Male' ;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where sc.Gender1 = 'Female';
+
+select sc.Gender1,sc.ageyear1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where sc.ageyear1 <= 20 ORDER BY p.profit DESC;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where 20< sc.ageyear1 <=30 ORDER BY p.profit DESC;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where 30<sc.ageyear1 <=50 ORDER BY p.profit DESC;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where 50>sc.ageyear1 ORDER BY p.profit DESC;
+
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where p.profit <50 ORDER BY p.profit DESC;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where p.profit>=50 AND p.profit <100 ORDER BY p.profit DESC;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where 100<=p.profit AND p.profit<300 ORDER BY p.profit DESC;
+select sc.Gender1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where p.profit>300 ORDER BY p.profit DESC;
+
+select sc.Gender1,sc.Country1 ,p.ProductName1,p.UnitPriceUSD1,p.Category1,p.profit from salesandcustomers sc join prdf p on sc.ProductKey1=p.ProductKey1 where sc.Continent1="North America";
+ 
+SHOW TABLES;
+select * from customersdf;
